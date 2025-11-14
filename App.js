@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import TodoItem from './components/TodoItem';
 
 export default function App() {
-  export default function App() {
   // State for the text input
   const [enteredTaskText, setEnteredTaskText] = useState('');
 
@@ -28,7 +28,7 @@ export default function App() {
     // Clear the input field
     setEnteredTaskText('');
   }
-  }
+  
   return (
     <SafeAreaView style={styles.appContainer}>
       <View style={styles.contentContainer}>
@@ -44,11 +44,20 @@ export default function App() {
           <Button title="Add" onPress={addTaskHandler} />
         </View>
 
-        {/* List area will go here */}
+        {      <View style={styles.listContainer}>
+        <FlatList
+          data={tasks}
+          renderItem={({ item }) => <TodoItem text={item.text} />}
+          keyExtractor={(item) => item.id}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No tasks yet. Add one!</Text>
+          }
+        />
+      </View>
+}
       </View>
     </SafeAreaView>
   );
-
 }
 const styles = StyleSheet.create({
   appContainer: {
@@ -84,4 +93,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 16,
   },
+    listContainer: {
+    flex: 5, // Give the list more space than the input
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#888',
+  },
+
 });
