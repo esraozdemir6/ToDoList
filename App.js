@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, Keyboard, KeyboardAvoidingView, Platform, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TodoItem from './components/TodoItem';
 
@@ -18,6 +18,7 @@ export default function App() {
     if (enteredTaskText.trim().length === 0) {
       return;
     }
+    
 
     // Add new task to the tasks array
     setTasks((currentTasks) => [
@@ -27,37 +28,53 @@ export default function App() {
 
     // Clear the input field
     setEnteredTaskText('');
+    Keyboard.dismiss();
   }
+    function deleteTaskHandler(id) {
+    setTasks((currentTasks) => {
+      return currentTasks.filter((task) => task.id !== id);
+    });
+  }
+
   
-  return (
+    return (
     <SafeAreaView style={styles.appContainer}>
-      <View style={styles.contentContainer}>
+      <KeyboardAvoidingView
+        style={styles.contentContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <Text style={styles.title}>My Todo List</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="Add a new task..."
-            onChangeText={taskInputHandler} // Connect to state handler
-            value={enteredTaskText} // Connect value to state
+            onChangeText={taskInputHandler}
+            value={enteredTaskText}
           />
           <Button title="Add" onPress={addTaskHandler} />
         </View>
 
-        {      <View style={styles.listContainer}>
-        <FlatList
-          data={tasks}
-          renderItem={({ item }) => <TodoItem text={item.text} />}
-          keyExtractor={(item) => item.id}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No tasks yet. Add one!</Text>
-          }
-        />
-      </View>
-}
-      </View>
+        <View style={styles.listContainer}>
+          <FlatList
+            data={tasks}
+            renderItem={({ item }) => (
+              <TodoItem
+                text={item.text}
+                id={item.id}
+                onDelete={deleteTaskHandler}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No tasks yet. Add one!</Text>
+            }
+          />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
+
 }
 const styles = StyleSheet.create({
   appContainer: {
